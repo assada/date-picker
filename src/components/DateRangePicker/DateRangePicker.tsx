@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import styles from "./DateRangePicker.module.css";
 import Header from "./Header";
@@ -8,6 +8,7 @@ import {
   startOfDay,
   subMonths,
   isSameDay,
+  playTickSound,
 } from "./utils";
 import type { DateRangePickerProps, DateRange } from "./types";
 
@@ -37,12 +38,20 @@ export default function DateRangePicker({
   const [activePresetIndex, setActivePresetIndex] = useState<number | null>(null);
   const [, setIsDragging] = useState(false);
 
+  const prevRangeRef = useRef<DateRange>(range);
+
   const handleChange = useCallback(
     (newRange: DateRange) => {
       const clamped = {
         start: newRange.start < effectiveMinDate ? effectiveMinDate : newRange.start,
         end: newRange.end > effectiveMaxDate ? effectiveMaxDate : newRange.end,
       };
+      // Tick sound when date actually changes
+      const prev = prevRangeRef.current;
+      if (!isSameDay(prev.start, clamped.start) || !isSameDay(prev.end, clamped.end)) {
+        playTickSound();
+        prevRangeRef.current = clamped;
+      }
       if (!value) setInternalRange(clamped);
       onChange(clamped);
     },

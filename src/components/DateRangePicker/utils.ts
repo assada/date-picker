@@ -71,4 +71,25 @@ export function resolvePreset(
   return { start: startOfDay(maxDate), end: startOfDay(maxDate) };
 }
 
+/**
+ * Subtle tick sound via Web Audio API. Very short, quiet click.
+ */
+let audioCtx: AudioContext | null = null;
+export function playTickSound() {
+  try {
+    if (!audioCtx) audioCtx = new AudioContext();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.frequency.value = 1800;
+    gain.gain.value = 0.03;
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
+    osc.start(audioCtx.currentTime);
+    osc.stop(audioCtx.currentTime + 0.03);
+  } catch {
+    // Audio not available — silent fail
+  }
+}
+
 export { startOfMonth, endOfMonth, startOfDay, differenceInCalendarDays, isSameDay, format, isToday, subMonths };

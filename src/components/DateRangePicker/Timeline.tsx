@@ -212,7 +212,7 @@ export default function Timeline({
 
           {/* Range highlight */}
           <motion.div
-            className={styles.rangeHighlight}
+            className={`${styles.rangeHighlight} ${dragging === "range" ? styles.rangeHighlightDragging : ""}`}
             animate={{
               left: startPx,
               width: highlightWidth,

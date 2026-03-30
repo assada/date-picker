@@ -39,6 +39,7 @@ export default function Timeline({
   const [trackWidth, setTrackWidth] = useState(0);
   const [dragging, setDragging] = useState<"start" | "end" | "range" | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
+  const justDraggedRef = useRef(false);
 
   // Scroll to target fraction (e.g. "This month" or month click)
   useEffect(() => {
@@ -140,6 +141,7 @@ export default function Timeline({
     const onUp = () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      justDraggedRef.current = true;
       setDragging(null);
       onDragEnd();
     };
@@ -183,7 +185,7 @@ export default function Timeline({
 
       <div className={styles.trackContainer}>
         <div ref={trackRef} className={styles.track} onClick={(e) => {
-          if (dragging) return;
+          if (dragging || justDraggedRef.current) { justDraggedRef.current = false; return; }
           const rect = trackRef.current?.getBoundingClientRect();
           if (!rect) return;
           const clickPx = e.clientX - rect.left;
@@ -244,7 +246,7 @@ export default function Timeline({
               handleStartDrag(viewFrac);
             }}
             onDragStart={() => { setDragging("start"); onDragStart(); }}
-            onDragEnd={() => { setDragging(null); onDragEnd(); }}
+            onDragEnd={() => { justDraggedRef.current = true; setDragging(null); onDragEnd(); }}
             trackWidth={trackWidth}
             isDragging={dragging === "start"}
             animated={!dragging}
@@ -256,7 +258,7 @@ export default function Timeline({
               handleEndDrag(viewFrac);
             }}
             onDragStart={() => { setDragging("end"); onDragStart(); }}
-            onDragEnd={() => { setDragging(null); onDragEnd(); }}
+            onDragEnd={() => { justDraggedRef.current = true; setDragging(null); onDragEnd(); }}
             trackWidth={trackWidth}
             isDragging={dragging === "end"}
             animated={!dragging}

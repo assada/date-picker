@@ -2,6 +2,8 @@
 
 > Experimental timeline-based date range picker for React. Spring animations, backdrop-blur highlights, per-digit odometer, preset buttons.
 
+Based on [concept by @AliGrids](https://x.com/AliGrids/status/2038102112517935145)
+
 **[Live Demo](https://assada.github.io/date-picker/)**
 
 ## Install

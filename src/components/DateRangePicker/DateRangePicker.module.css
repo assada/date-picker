@@ -4,8 +4,8 @@
   --drp-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   --drp-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --drp-track-bg: #f0f0f0;
-  --drp-range-blur: 3px;
-  --drp-range-color: rgba(255, 255, 255, 0.55);
+  --drp-range-blur: 4px;
+  --drp-range-color: rgba(255, 255, 255, 0.7);
   --drp-handle-color: #8ba4c4;
   --drp-handle-active-color: #5b7da5;
   --drp-tick-color: #c8c8c8;
@@ -132,6 +132,8 @@
 .trackContainer {
   overflow: hidden;
   position: relative;
+  background: #e4e7ec;
+  border-radius: 6px;
 }
 
 .track {

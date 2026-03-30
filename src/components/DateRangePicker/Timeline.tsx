@@ -181,10 +181,8 @@ export default function Timeline({
       </div>
 
       <div className={styles.trackContainer}>
-        <div ref={trackRef} className={styles.track} onPointerUp={(e) => {
+        <div ref={trackRef} className={styles.track} onClick={(e) => {
           if (dragging) return;
-          // Only handle direct clicks on track, not from drag releases
-          if (e.target !== trackRef.current && !(e.target instanceof SVGElement)) return;
           const rect = trackRef.current?.getBoundingClientRect();
           if (!rect) return;
           const clickPx = e.clientX - rect.left;
@@ -192,8 +190,12 @@ export default function Timeline({
           const clickDate = startOfDay(fractionToDate(Math.max(0, Math.min(1, clickFrac)), minDate, maxDate));
           const currentDays = rangeDayCount(range.start, range.end);
           const halfDays = Math.floor((currentDays - 1) / 2);
-          const newStart = clampDate(addDays(clickDate, -halfDays), minDate, maxDate);
-          const newEnd = clampDate(addDays(clickDate, currentDays - 1 - halfDays), minDate, maxDate);
+          let newStart = addDays(clickDate, -halfDays);
+          let newEnd = addDays(clickDate, currentDays - 1 - halfDays);
+          // Shift to fit within bounds while keeping exact day count
+          if (newEnd > maxDate) { newEnd = maxDate; newStart = addDays(newEnd, -(currentDays - 1)); }
+          if (newStart < minDate) { newStart = minDate; newEnd = addDays(newStart, currentDays - 1); }
+          if (newEnd > maxDate) newEnd = maxDate;
           onChange({ start: startOfDay(newStart), end: startOfDay(newEnd) });
         }}>
           {/* SVG day ticks */}
@@ -230,6 +232,7 @@ export default function Timeline({
               : { type: "spring", stiffness: 300, damping: 30 }
             }
             onPointerDown={handleRangePointerDown}
+            onClick={(e) => e.stopPropagation()}
           />
 
           {/* Handles — same logic: spring on click, instant on drag */}

@@ -82,7 +82,9 @@ export default function DateRangePicker({
       const halfDays = Math.floor((days - 1) / 2);
       let newStart = startOfDay(addDays(center, -halfDays));
       let newEnd = startOfDay(addDays(center, days - 1 - halfDays));
-      if (newStart < effectiveMinDate) newStart = effectiveMinDate;
+      // Shift to keep exact day count within bounds
+      if (newEnd > effectiveMaxDate) { newEnd = effectiveMaxDate; newStart = startOfDay(addDays(newEnd, -(days - 1))); }
+      if (newStart < effectiveMinDate) { newStart = effectiveMinDate; newEnd = startOfDay(addDays(newStart, days - 1)); }
       if (newEnd > effectiveMaxDate) newEnd = effectiveMaxDate;
       setActivePresetIndex(index);
       handleChange({ start: newStart, end: newEnd });

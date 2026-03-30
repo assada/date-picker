@@ -1,0 +1,233 @@
+.root {
+  --drp-bg: #ffffff;
+  --drp-border-radius: 16px;
+  --drp-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  --drp-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --drp-track-bg: #f0f0f0;
+  --drp-range-color: rgba(100, 120, 150, 0.13);
+  --drp-handle-color: #888;
+  --drp-handle-active-color: #555;
+  --drp-tick-color: #c8c8c8;
+  --drp-tick-active-color: #999;
+  --drp-text-primary: #111827;
+  --drp-text-secondary: #9ca3af;
+  --drp-text-month-active: #111827;
+  --drp-preset-active-bg: #ffffff;
+  --drp-preset-bg: #f3f4f6;
+  --drp-preset-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+  font-family: var(--drp-font-family);
+  background: var(--drp-bg);
+  border-radius: var(--drp-border-radius);
+  box-shadow: var(--drp-shadow);
+  padding: 20px 24px 16px;
+  user-select: none;
+  width: 100%;
+  min-width: 500px;
+  max-width: 720px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.rangeLabel {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--drp-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  height: 22px;
+}
+
+.rangeLabelText {
+  display: inline-block;
+}
+
+.presets {
+  display: flex;
+  gap: 2px;
+  background: var(--drp-preset-bg);
+  border-radius: 8px;
+  padding: 3px;
+  position: relative;
+}
+
+.presetButton {
+  position: relative;
+  z-index: 1;
+  border: none;
+  background: transparent;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--drp-text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  transition: color 0.2s;
+  font-family: var(--drp-font-family);
+  white-space: nowrap;
+}
+
+.presetButton:hover {
+  color: var(--drp-text-primary);
+}
+
+.presetButtonActive {
+  color: var(--drp-text-primary);
+}
+
+.presetIndicator {
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  background: var(--drp-preset-active-bg);
+  border-radius: 6px;
+  box-shadow: var(--drp-preset-shadow);
+}
+
+.timeline {
+  position: relative;
+  padding: 0 28px;
+}
+
+.scrollArrow {
+  position: absolute;
+  top: 0;
+  bottom: 24px;
+  width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--drp-text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 2;
+  transition: color 0.2s;
+}
+
+.scrollArrow:hover {
+  color: var(--drp-text-primary);
+}
+
+.scrollArrowLeft {
+  left: 0;
+}
+
+.scrollArrowRight {
+  right: 0;
+}
+
+.scrollArrowHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.trackContainer {
+  overflow: hidden;
+  position: relative;
+}
+
+.track {
+  position: relative;
+  height: 32px;
+  cursor: crosshair;
+}
+
+.ticksSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.rangeHighlight {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  background: var(--drp-range-color);
+  border-radius: 4px;
+  cursor: grab;
+}
+
+.rangeHighlight:active {
+  cursor: grabbing;
+}
+
+.handle {
+  position: absolute;
+  top: 50%;
+  width: 3px;
+  height: 20px;
+  background: var(--drp-handle-color);
+  border-radius: 1.5px;
+  transform: translate(-50%, -50%);
+  cursor: ew-resize;
+  z-index: 3;
+  touch-action: none;
+}
+
+.handle::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: -10px;
+  right: -10px;
+  bottom: -8px;
+}
+
+.handleDragging {
+  background: var(--drp-handle-active-color);
+}
+
+.daysTooltip {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+  background: var(--drp-bg);
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--drp-text-primary);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  z-index: 4;
+}
+
+.monthLabels {
+  display: flex;
+  position: relative;
+  margin-top: 6px;
+  height: 20px;
+}
+
+.monthLabel {
+  position: absolute;
+  font-size: 13px;
+  color: var(--drp-text-secondary);
+  cursor: pointer;
+  transition: color 0.2s;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-weight: 400;
+}
+
+.monthLabel:hover {
+  color: var(--drp-text-primary);
+}
+
+.monthLabelActive {
+  color: var(--drp-text-month-active);
+  font-weight: 700;
+}

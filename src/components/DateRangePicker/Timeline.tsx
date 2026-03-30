@@ -73,11 +73,12 @@ export default function Timeline({
 
   const clampScroll = useCallback((s: number) => Math.max(minScroll, Math.min(maxScroll, s)), [minScroll]);
 
+  const viewStartFrac = 1 - viewSpan + scrollOffset;
+
   // Transform fraction to pixel in viewport
   const fracToViewPx = useCallback((frac: number) => {
-    const viewFrac = frac - (1 - viewSpan + scrollOffset);
-    return (viewFrac / viewSpan) * trackWidth;
-  }, [viewSpan, scrollOffset, trackWidth]);
+    return ((frac - viewStartFrac) / viewSpan) * trackWidth;
+  }, [viewSpan, viewStartFrac, trackWidth]);
 
   const canScrollLeft = scrollOffset > minScroll + 0.001;
   const canScrollRight = scrollOffset < maxScroll - 0.001;

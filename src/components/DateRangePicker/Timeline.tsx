@@ -186,10 +186,10 @@ export default function Timeline({
           >
             <g
               style={{
-                transform: `translateX(${(-(1 - viewSpan + scrollOffset) / viewSpan) * 100}%)`,
+                transform: `translateX(${(-(1 - viewSpan + scrollOffset) / viewSpan) * 100}%) scaleX(${1 / viewSpan})`,
                 transformOrigin: "0 0",
+                transition: "transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
-              transform={`scale(${1 / viewSpan}, 1)`}
             >
               {tickPaths.map((d, i) => (
                 <path

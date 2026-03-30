@@ -50,7 +50,6 @@ export default function Header({
                     className={styles.presetIndicator}
                     layoutId="presetIndicator"
                     transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    style={{ left: 0, right: 0, top: 0, bottom: 0, position: "absolute" }}
                   />
                 )}
                 <span style={{ position: "relative", zIndex: 1 }}>{preset.label}</span>

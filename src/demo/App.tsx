@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { startOfDay } from "date-fns";
 import { DateRangePicker } from "../components/DateRangePicker";
 import type { DateRange } from "../components/DateRangePicker";
 
@@ -18,9 +19,9 @@ export default function App() {
     start: (() => {
       const d = new Date();
       d.setDate(d.getDate() - 6);
-      return d;
+      return startOfDay(d);
     })(),
-    end: new Date(),
+    end: startOfDay(new Date()),
   });
 
   return (

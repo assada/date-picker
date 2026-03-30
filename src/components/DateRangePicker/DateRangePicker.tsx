@@ -69,7 +69,7 @@ export default function DateRangePicker({
   );
 
   const detectActivePreset = useCallback(() => {
-    if (!presets || isDragging) return;
+    if (!presets) return;
     for (let i = 0; i < presets.length; i++) {
       const resolved = resolvePreset(presets[i], effectiveMaxDate);
       if (isSameDay(resolved.start, range.start) && isSameDay(resolved.end, range.end)) {
@@ -77,7 +77,7 @@ export default function DateRangePicker({
         return;
       }
     }
-  }, [presets, range, effectiveMaxDate, isDragging]);
+  }, [presets, range, effectiveMaxDate]);
 
   return (
     <motion.div

@@ -142,7 +142,7 @@ export default function Timeline({
     // Scroll to center the clicked month
     const midFrac = (dateToFraction(clampedStart, minDate, maxDate) + dateToFraction(clampedEnd, minDate, maxDate)) / 2;
     const targetScroll = -(1 - viewSpan) + midFrac - viewSpan / 2;
-    setScrollOffset(clampScrollFn(targetScroll));
+    setScrollOffset(clampScroll(targetScroll));
     onChange({ start: startOfDay(clampedStart), end: startOfDay(clampedEnd) });
   };
 

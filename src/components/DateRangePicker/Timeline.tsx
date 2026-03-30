@@ -1,0 +1,269 @@
+import { useRef, useState, useCallback, useEffect } from "react";
+import { motion } from "framer-motion";
+import styles from "./DateRangePicker.module.css";
+import Handle from "./Handle";
+import DaysTooltip from "./DaysTooltip";
+import MonthLabels from "./MonthLabels";
+import {
+  dateToFraction,
+  fractionToDate,
+  clampDate,
+  getMonthsInRange,
+  rangeDayCount,
+  totalDays,
+  startOfDay,
+} from "./utils";
+import type { DateRange } from "./types";
+
+interface TimelineProps {
+  range: DateRange;
+  minDate: Date;
+  maxDate: Date;
+  onChange: (range: DateRange) => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
+}
+
+export default function Timeline({
+  range,
+  minDate,
+  maxDate,
+  onChange,
+  onDragStart,
+  onDragEnd,
+}: TimelineProps) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const [trackWidth, setTrackWidth] = useState(0);
+  const [dragging, setDragging] = useState<"start" | "end" | "range" | null>(null);
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  // Measure track width
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      setTrackWidth(entries[0].contentRect.width);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const total = totalDays(minDate, maxDate);
+  const startFrac = dateToFraction(range.start, minDate, maxDate);
+  const endFrac = dateToFraction(range.end, minDate, maxDate);
+  const days = rangeDayCount(range.start, range.end);
+  const months = getMonthsInRange(minDate, maxDate);
+
+  // Visible window as fractions
+  const visibleMonths = 4;
+  const viewSpan = Math.min(1, visibleMonths * 30 / total);
+  const maxScroll = 0;
+  const minScroll = -(1 - viewSpan);
+
+  const clampScroll = useCallback((s: number) => Math.max(minScroll, Math.min(maxScroll, s)), [minScroll]);
+
+  // Transform fraction to pixel in viewport
+  const fracToViewPx = useCallback((frac: number) => {
+    const viewFrac = frac - (1 - viewSpan + scrollOffset);
+    return (viewFrac / viewSpan) * trackWidth;
+  }, [viewSpan, scrollOffset, trackWidth]);
+
+  const canScrollLeft = scrollOffset > minScroll + 0.001;
+  const canScrollRight = scrollOffset < maxScroll - 0.001;
+
+  const scrollBy = (delta: number) => {
+    setScrollOffset((prev) => clampScroll(prev + delta));
+  };
+
+  const handleStartDrag = useCallback(
+    (newFrac: number) => {
+      const clamped = Math.max(0, Math.min(newFrac, endFrac));
+      const newDate = clampDate(fractionToDate(clamped, minDate, maxDate), minDate, range.end);
+      onChange({ start: newDate, end: range.end });
+    },
+    [endFrac, minDate, maxDate, range.end, onChange]
+  );
+
+  const handleEndDrag = useCallback(
+    (newFrac: number) => {
+      const clamped = Math.max(startFrac, Math.min(newFrac, 1));
+      const newDate = clampDate(fractionToDate(clamped, minDate, maxDate), range.start, maxDate);
+      onChange({ start: range.start, end: newDate });
+    },
+    [startFrac, minDate, maxDate, range.start, onChange]
+  );
+
+  // Range body drag
+  const handleRangePointerDown = (e: React.PointerEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragging("range");
+    onDragStart();
+    const startX = e.clientX;
+    const origStartFrac = startFrac;
+    const origEndFrac = endFrac;
+    const span = origEndFrac - origStartFrac;
+
+    const onMove = (moveEvent: PointerEvent) => {
+      const dx = moveEvent.clientX - startX;
+      const deltaFrac = trackWidth > 0 ? (dx / trackWidth) * viewSpan : 0;
+      let newStart = origStartFrac + deltaFrac;
+      let newEnd = origEndFrac + deltaFrac;
+
+      if (newStart < 0) {
+        newStart = 0;
+        newEnd = span;
+      }
+      if (newEnd > 1) {
+        newEnd = 1;
+        newStart = 1 - span;
+      }
+
+      onChange({
+        start: fractionToDate(newStart, minDate, maxDate),
+        end: fractionToDate(newEnd, minDate, maxDate),
+      });
+    };
+
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      setDragging(null);
+      onDragEnd();
+    };
+
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
+
+  const handleMonthClick = (monthStart: Date, monthEnd: Date) => {
+    const clampedStart = clampDate(monthStart, minDate, maxDate);
+    const clampedEnd = clampDate(monthEnd, minDate, maxDate);
+    onChange({ start: startOfDay(clampedStart), end: startOfDay(clampedEnd) });
+  };
+
+  // Generate SVG ticks
+  const tickPaths: string[] = [];
+  for (let i = 0; i <= total; i++) {
+    const x = (i / total) * 100;
+    const date = fractionToDate(i / total, minDate, maxDate);
+    const isMonthStart = date.getDate() === 1;
+    const y1 = isMonthStart ? 4 : 10;
+    const y2 = isMonthStart ? 28 : 22;
+    tickPaths.push(`M${x} ${y1}V${y2}`);
+  }
+
+  const startPx = fracToViewPx(startFrac);
+  const endPx = fracToViewPx(endFrac);
+  const centerPx = (startPx + endPx) / 2;
+
+  // Auto-scroll: ensure selected range is at least partially visible
+  useEffect(() => {
+    const viewLeft = 1 - viewSpan + scrollOffset;
+    const viewRight = viewLeft + viewSpan;
+    if (endFrac < viewLeft || startFrac > viewRight) {
+      const targetScroll = -(1 - viewSpan) + startFrac;
+      setScrollOffset(clampScroll(targetScroll));
+    }
+  }, [startFrac, endFrac, viewSpan, scrollOffset, clampScroll]);
+
+  return (
+    <div className={styles.timeline}>
+      <div
+        className={`${styles.scrollArrow} ${styles.scrollArrowLeft} ${!canScrollLeft ? styles.scrollArrowHidden : ""}`}
+        onClick={() => scrollBy(-viewSpan * 0.5)}
+      >
+        «
+      </div>
+
+      <div className={styles.trackContainer}>
+        <div ref={trackRef} className={styles.track}>
+          {/* SVG day ticks */}
+          <svg
+            className={styles.ticksSvg}
+            viewBox="0 0 100 32"
+            preserveAspectRatio="none"
+          >
+            <g
+              style={{
+                transform: `translateX(${(-(1 - viewSpan + scrollOffset) / viewSpan) * 100}%)`,
+                transformOrigin: "0 0",
+              }}
+              transform={`scale(${1 / viewSpan}, 1)`}
+            >
+              {tickPaths.map((d, i) => (
+                <path
+                  key={i}
+                  d={d}
+                  stroke="var(--drp-tick-color)"
+                  strokeWidth={0.15}
+                  vectorEffect="non-scaling-stroke"
+                />
+              ))}
+            </g>
+          </svg>
+
+          {/* Range highlight */}
+          <motion.div
+            className={styles.rangeHighlight}
+            animate={{
+              left: Math.max(0, startPx),
+              width: Math.max(0, endPx - startPx),
+            }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            onPointerDown={handleRangePointerDown}
+          />
+
+          {/* Handles */}
+          <Handle
+            position={startPx / (trackWidth || 1)}
+            onDrag={(frac) => {
+              const viewFrac = frac * viewSpan + (1 - viewSpan + scrollOffset);
+              handleStartDrag(viewFrac);
+            }}
+            onDragStart={() => { setDragging("start"); onDragStart(); }}
+            onDragEnd={() => { setDragging(null); onDragEnd(); }}
+            trackWidth={trackWidth}
+            isDragging={dragging === "start"}
+          />
+          <Handle
+            position={endPx / (trackWidth || 1)}
+            onDrag={(frac) => {
+              const viewFrac = frac * viewSpan + (1 - viewSpan + scrollOffset);
+              handleEndDrag(viewFrac);
+            }}
+            onDragStart={() => { setDragging("end"); onDragStart(); }}
+            onDragEnd={() => { setDragging(null); onDragEnd(); }}
+            trackWidth={trackWidth}
+            isDragging={dragging === "end"}
+          />
+
+          {/* Days tooltip */}
+          <DaysTooltip
+            days={days}
+            centerPx={centerPx}
+            visible={dragging !== null}
+          />
+        </div>
+
+        {/* Month labels */}
+        <MonthLabels
+          months={months.map((m) => ({
+            ...m,
+            fraction: (m.fraction - (1 - viewSpan + scrollOffset)) / viewSpan,
+          }))}
+          trackWidth={trackWidth}
+          selectedRange={range}
+          onMonthClick={handleMonthClick}
+        />
+      </div>
+
+      <div
+        className={`${styles.scrollArrow} ${styles.scrollArrowRight} ${!canScrollRight ? styles.scrollArrowHidden : ""}`}
+        onClick={() => scrollBy(viewSpan * 0.5)}
+      >
+        »
+      </div>
+    </div>
+  );
+}

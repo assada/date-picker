@@ -252,18 +252,20 @@ export default function Timeline({
             visible={true}
           />
         </div>
+      </div>
 
-        {/* Month labels */}
-        <MonthLabels
-          months={months.map((m) => ({
+      {/* Month labels — outside trackContainer to avoid overflow:hidden clipping */}
+      <MonthLabels
+        months={months
+          .map((m) => ({
             ...m,
             fraction: (m.fraction - (1 - viewSpan + scrollOffset)) / viewSpan,
-          }))}
-          trackWidth={trackWidth}
-          selectedRange={range}
-          onMonthClick={handleMonthClick}
-        />
-      </div>
+          }))
+          .filter((m) => m.fraction > -0.1 && m.fraction < 1.1)}
+        trackWidth={trackWidth}
+        selectedRange={range}
+        onMonthClick={handleMonthClick}
+      />
 
       <div
         className={`${styles.scrollArrow} ${styles.scrollArrowRight} ${!canScrollRight ? styles.scrollArrowHidden : ""}`}

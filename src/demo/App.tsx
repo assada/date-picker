@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { startOfDay } from "date-fns";
+import { startOfDay, format } from "date-fns";
 import { DateRangePicker } from "../components/DateRangePicker";
 import type { DateRange } from "../components/DateRangePicker";
 
@@ -65,11 +65,11 @@ export default function App() {
           Selected Range (ISO 8601)
         </div>
         <div>
-          {range.start.toISOString()}
+          {format(range.start, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")}
         </div>
         <div style={{ color: "#9ca3af" }}>/</div>
         <div>
-          {range.end.toISOString()}
+          {format(range.end, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")}
         </div>
       </div>
     </div>

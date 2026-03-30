@@ -23,12 +23,7 @@ export default function Handle({
   return (
     <motion.div
       className={`${styles.handle} ${isDragging ? styles.handleDragging : ""}`}
-      style={{ left }}
-      animate={{
-        left,
-        scaleY: isDragging ? 1.3 : 1,
-        scaleX: isDragging ? 1.5 : 1,
-      }}
+      animate={{ left }}
       transition={{ type: "spring", stiffness: 400, damping: 35 }}
       onPointerDown={(e) => {
         e.preventDefault();

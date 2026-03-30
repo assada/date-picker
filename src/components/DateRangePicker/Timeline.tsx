@@ -153,19 +153,26 @@ export default function Timeline({
     tickPaths.push(`M${x} ${y1}V${y2}`);
   }
 
-  const startPx = fracToViewPx(startFrac);
-  const endPx = fracToViewPx(endFrac);
-  const centerPx = (startPx + endPx) / 2;
+  const rawStartPx = fracToViewPx(startFrac);
+  const rawEndPx = fracToViewPx(endFrac);
+  const startPx = Math.max(0, rawStartPx);
+  const endPx = Math.min(trackWidth, rawEndPx);
+  const highlightWidth = Math.max(0, endPx - startPx);
+  const clampedCenterPx = Math.max(30, Math.min(trackWidth - 30, (rawStartPx + rawEndPx) / 2));
 
   // Auto-scroll: ensure selected range is at least partially visible
   useEffect(() => {
     const viewLeft = 1 - viewSpan + scrollOffset;
     const viewRight = viewLeft + viewSpan;
-    if (endFrac < viewLeft || startFrac > viewRight) {
-      const targetScroll = -(1 - viewSpan) + startFrac;
+    const rangeMid = (startFrac + endFrac) / 2;
+
+    // If range center is outside visible area, scroll to center it
+    if (rangeMid < viewLeft || rangeMid > viewRight) {
+      const targetScroll = -(1 - viewSpan) + rangeMid - viewSpan / 2;
       setScrollOffset(clampScroll(targetScroll));
     }
-  }, [startFrac, endFrac, viewSpan, scrollOffset, clampScroll]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startFrac, endFrac, viewSpan, clampScroll]);
 
   return (
     <div className={styles.timeline}>
@@ -207,8 +214,8 @@ export default function Timeline({
           <motion.div
             className={styles.rangeHighlight}
             animate={{
-              left: Math.max(0, startPx),
-              width: Math.max(0, endPx - startPx),
+              left: startPx,
+              width: highlightWidth,
             }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
             onPointerDown={handleRangePointerDown}
@@ -241,8 +248,8 @@ export default function Timeline({
           {/* Days tooltip */}
           <DaysTooltip
             days={days}
-            centerPx={centerPx}
-            visible={dragging !== null}
+            centerPx={clampedCenterPx}
+            visible={true}
           />
         </div>
 

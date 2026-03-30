@@ -32,7 +32,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .rangeLabel {
@@ -95,7 +97,7 @@
 
 .timeline {
   position: relative;
-  padding: 0 28px;
+  padding: 14px 28px 0;
 }
 
 .scrollArrow {
@@ -166,38 +168,46 @@
 
 .handle {
   position: absolute;
-  top: 50%;
-  width: 3px;
-  height: 20px;
-  background: var(--drp-handle-color);
-  border-radius: 1.5px;
-  transform: translate(-50%, -50%);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #8ba4c4;
+  transform: translateX(-50%);
   cursor: ew-resize;
   z-index: 3;
   touch-action: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 1px;
 }
 
 .handle::before {
   content: "";
   position: absolute;
-  top: -8px;
+  top: -4px;
   left: -10px;
   right: -10px;
-  bottom: -8px;
+  bottom: -4px;
+}
+
+.root:hover .handle,
+.handleDragging {
+  opacity: 1;
 }
 
 .handleDragging {
-  background: var(--drp-handle-active-color);
+  background: #5b7da5;
+  width: 3px;
 }
 
 .daysTooltip {
   position: absolute;
-  top: 4px;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   background: var(--drp-bg);
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e8eaed;
   border-radius: 6px;
-  padding: 3px 10px;
+  padding: 2px 8px;
   font-size: 12px;
   font-weight: 500;
   color: var(--drp-text-primary);
@@ -205,6 +215,7 @@
   pointer-events: none;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   z-index: 4;
+  overflow: hidden;
 }
 
 .monthLabels {

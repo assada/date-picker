@@ -132,7 +132,6 @@
 .trackContainer {
   overflow: hidden;
   position: relative;
-  background: #e4e7ec;
   border-radius: 6px;
 }
 
@@ -177,8 +176,8 @@
 /* === Handles — short, subtle, elegant === */
 .handle {
   position: absolute;
-  top: 15%;
-  bottom: 15%;
+  top: 30%;
+  bottom: 30%;
   width: 2px;
   background: var(--drp-handle-color);
   transform: translateX(-50%);

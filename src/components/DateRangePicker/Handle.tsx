@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import styles from "./DateRangePicker.module.css";
 
 interface HandleProps {
@@ -21,10 +20,9 @@ export default function Handle({
   const left = position * trackWidth;
 
   return (
-    <motion.div
+    <div
       className={`${styles.handle} ${isDragging ? styles.handleDragging : ""}`}
-      animate={{ left }}
-      transition={{ type: "spring", stiffness: 400, damping: 35 }}
+      style={{ left }}
       onPointerDown={(e) => {
         e.preventDefault();
         e.stopPropagation();

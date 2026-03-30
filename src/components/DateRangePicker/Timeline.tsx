@@ -142,15 +142,11 @@ export default function Timeline({
     onChange({ start: startOfDay(clampedStart), end: startOfDay(clampedEnd) });
   };
 
-  // Generate SVG ticks
+  // Generate SVG ticks — all same height
   const tickPaths: string[] = [];
   for (let i = 0; i <= total; i++) {
     const x = (i / total) * 100;
-    const date = fractionToDate(i / total, minDate, maxDate);
-    const isMonthStart = date.getDate() === 1;
-    const y1 = isMonthStart ? 4 : 10;
-    const y2 = isMonthStart ? 28 : 22;
-    tickPaths.push(`M${x} ${y1}V${y2}`);
+    tickPaths.push(`M${x} 8V24`);
   }
 
   const rawStartPx = fracToViewPx(startFrac);

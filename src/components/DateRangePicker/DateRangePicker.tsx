@@ -64,6 +64,13 @@ export default function DateRangePicker({
     (index: number) => {
       if (!presets) return;
       const preset = presets[index];
+      // If preset has explicit from/to, use them directly (e.g. "This month")
+      if (preset.from && preset.to) {
+        const resolved = resolvePreset(preset, effectiveMaxDate);
+        setActivePresetIndex(index);
+        handleChange(resolved);
+        return;
+      }
       const days = preset.days ?? 30;
       // Expand/contract symmetrically from CURRENT range center
       const centerTime = (range.start.getTime() + range.end.getTime()) / 2;
@@ -71,7 +78,6 @@ export default function DateRangePicker({
       const halfDays = Math.floor((days - 1) / 2);
       let newStart = startOfDay(addDays(center, -halfDays));
       let newEnd = startOfDay(addDays(center, days - 1 - halfDays));
-      // Clamp to bounds
       if (newStart < effectiveMinDate) newStart = effectiveMinDate;
       if (newEnd > effectiveMaxDate) newEnd = effectiveMaxDate;
       setActivePresetIndex(index);

@@ -3,8 +3,9 @@ import { startOfDay, endOfDay, format } from "date-fns";
 import { DateRangePicker } from "../components/DateRangePicker";
 import type { DateRange } from "../components/DateRangePicker";
 
+const now = new Date();
 const presets = [
-  { label: "This month", days: new Date().getDate() },
+  { label: "This month", from: new Date(now.getFullYear(), now.getMonth(), 1), to: new Date(now.getFullYear(), now.getMonth() + 1, 0) },
   { label: "Last 7D", days: 7 },
   { label: "30D", days: 30 },
   { label: "90D", days: 90 },

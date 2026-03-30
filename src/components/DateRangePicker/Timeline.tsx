@@ -13,6 +13,7 @@ import {
   totalDays,
   startOfDay,
 } from "./utils";
+import { addDays } from "date-fns";
 import type { DateRange } from "./types";
 
 interface TimelineProps {
@@ -177,7 +178,20 @@ export default function Timeline({
       </div>
 
       <div className={styles.trackContainer}>
-        <div ref={trackRef} className={styles.track}>
+        <div ref={trackRef} className={styles.track} onClick={(e) => {
+          if (dragging) return;
+          const rect = trackRef.current?.getBoundingClientRect();
+          if (!rect) return;
+          const clickPx = e.clientX - rect.left;
+          const clickFrac = (clickPx / trackWidth) * viewSpan + viewStartFrac;
+          const clickDate = startOfDay(fractionToDate(Math.max(0, Math.min(1, clickFrac)), minDate, maxDate));
+          // Move range center to click point, keep current width
+          const currentDays = rangeDayCount(range.start, range.end);
+          const halfDays = Math.floor((currentDays - 1) / 2);
+          let newStart = clampDate(addDays(clickDate, -halfDays), minDate, maxDate);
+          let newEnd = clampDate(addDays(clickDate, currentDays - 1 - halfDays), minDate, maxDate);
+          onChange({ start: startOfDay(newStart), end: startOfDay(newEnd) });
+        }}>
           {/* SVG day ticks */}
           <svg
             className={styles.ticksSvg}

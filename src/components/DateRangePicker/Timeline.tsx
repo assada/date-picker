@@ -22,6 +22,7 @@ interface TimelineProps {
   onChange: (range: DateRange) => void;
   onDragStart: () => void;
   onDragEnd: () => void;
+  scrollResetKey: number;
 }
 
 export default function Timeline({
@@ -31,11 +32,17 @@ export default function Timeline({
   onChange,
   onDragStart,
   onDragEnd,
+  scrollResetKey,
 }: TimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [trackWidth, setTrackWidth] = useState(0);
   const [dragging, setDragging] = useState<"start" | "end" | "range" | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
+
+  // Reset scroll to end (today) when preset is clicked
+  useEffect(() => {
+    if (scrollResetKey > 0) setScrollOffset(0);
+  }, [scrollResetKey]);
 
   // Measure track width
   useEffect(() => {

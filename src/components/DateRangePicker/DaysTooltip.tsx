@@ -7,8 +7,27 @@ interface DaysTooltipProps {
   visible: boolean;
 }
 
+function OdometerDigit({ digit }: { digit: string }) {
+  return (
+    <span style={{ display: "inline-block", position: "relative", overflow: "hidden", height: "1.2em", lineHeight: "1.2em" }}>
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={digit}
+          initial={{ y: "100%" }}
+          animate={{ y: "0%" }}
+          exit={{ y: "-100%" }}
+          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          style={{ display: "inline-block" }}
+        >
+          {digit}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
 export default function DaysTooltip({ days, centerPx, visible }: DaysTooltipProps) {
-  const label = days === 1 ? "1" : days < 10 ? String(days) : `${days} Days`;
+  const digits = String(days).split("");
 
   return (
     <motion.div
@@ -22,18 +41,9 @@ export default function DaysTooltip({ days, centerPx, visible }: DaysTooltipProp
         opacity: { duration: 0.2 },
       }}
     >
-      <AnimatePresence mode="popLayout">
-        <motion.span
-          key={days}
-          initial={{ y: 12, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: -12, opacity: 0 }}
-          transition={{ duration: 0.15 }}
-          style={{ display: "inline-block" }}
-        >
-          {label}
-        </motion.span>
-      </AnimatePresence>
+      {digits.map((d, i) => (
+        <OdometerDigit key={digits.length - i} digit={d} />
+      ))}
     </motion.div>
   );
 }

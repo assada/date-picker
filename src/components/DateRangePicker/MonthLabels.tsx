@@ -32,11 +32,14 @@ export default function MonthLabels({
           selectedRange.end >= mStart &&
           selectedRange.end <= mEnd;
 
+        const rawLeft = m.fraction * trackWidth;
+        const clampedLeft = Math.max(25, Math.min(trackWidth - 25, rawLeft));
+
         return (
           <span
             key={m.label + m.date.getTime()}
             className={`${styles.monthLabel} ${isActive ? styles.monthLabelActive : ""}`}
-            style={{ left: m.fraction * trackWidth }}
+            style={{ left: clampedLeft }}
             onClick={() => onMonthClick(mStart, mEnd)}
           >
             {m.label}

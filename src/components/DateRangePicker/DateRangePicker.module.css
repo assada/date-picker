@@ -149,15 +149,16 @@
   pointer-events: none;
 }
 
-/* === Range Highlight — frosted white glass blur === */
+/* === Range Highlight — frosted white glass with subtle border === */
 .rangeHighlight {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: -1px;
+  bottom: -1px;
   background: var(--drp-range-color);
   backdrop-filter: blur(var(--drp-range-blur));
   -webkit-backdrop-filter: blur(var(--drp-range-blur));
-  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
   cursor: grab;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
 }

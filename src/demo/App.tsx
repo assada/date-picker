@@ -234,6 +234,26 @@ export default function App() {
             odometer transitions. Zero dependencies beyond React
             and Framer Motion.
           </p>
+          <a
+            href="https://x.com/AliGrids/status/2038102112517935145"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              marginTop: 16,
+              fontSize: 13,
+              color: "#999",
+              textDecoration: "none",
+              transition: "color 0.15s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#111")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#999")}
+          >
+            Based on concept by <span style={{ fontWeight: 500 }}>@AliGrids</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg>
+          </a>
         </header>
 
         {/* ── Playground ── */}

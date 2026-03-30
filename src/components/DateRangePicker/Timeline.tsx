@@ -154,7 +154,7 @@ export default function Timeline({
   const startPx = Math.max(0, rawStartPx);
   const endPx = Math.min(trackWidth, rawEndPx);
   const highlightWidth = Math.max(0, endPx - startPx);
-  const clampedCenterPx = Math.max(30, Math.min(trackWidth - 30, (rawStartPx + rawEndPx) / 2));
+  const clampedCenterPx = (startPx + endPx) / 2;
 
   // Auto-scroll: ensure selected range is at least partially visible
   useEffect(() => {

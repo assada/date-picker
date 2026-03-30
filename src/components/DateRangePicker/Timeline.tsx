@@ -139,6 +139,10 @@ export default function Timeline({
   const handleMonthClick = (monthStart: Date, monthEnd: Date) => {
     const clampedStart = clampDate(monthStart, minDate, maxDate);
     const clampedEnd = clampDate(monthEnd, minDate, maxDate);
+    // Scroll to center the clicked month
+    const midFrac = (dateToFraction(clampedStart, minDate, maxDate) + dateToFraction(clampedEnd, minDate, maxDate)) / 2;
+    const targetScroll = -(1 - viewSpan) + midFrac - viewSpan / 2;
+    setScrollOffset(clampScrollFn(targetScroll));
     onChange({ start: startOfDay(clampedStart), end: startOfDay(clampedEnd) });
   };
 
@@ -155,20 +159,6 @@ export default function Timeline({
   const endPx = Math.min(trackWidth, rawEndPx);
   const highlightWidth = Math.max(0, endPx - startPx);
   const clampedCenterPx = (startPx + endPx) / 2;
-
-  // Auto-scroll: ensure selected range is at least partially visible
-  useEffect(() => {
-    const viewLeft = 1 - viewSpan + scrollOffset;
-    const viewRight = viewLeft + viewSpan;
-    const rangeMid = (startFrac + endFrac) / 2;
-
-    // If range center is outside visible area, scroll to center it
-    if (rangeMid < viewLeft || rangeMid > viewRight) {
-      const targetScroll = -(1 - viewSpan) + rangeMid - viewSpan / 2;
-      setScrollOffset(clampScroll(targetScroll));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startFrac, endFrac, viewSpan, clampScroll]);
 
   return (
     <div className={styles.timeline}>

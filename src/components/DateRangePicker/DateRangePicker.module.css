@@ -153,13 +153,13 @@
 /* === Range Highlight — frosted white glass with subtle border === */
 .rangeHighlight {
   position: absolute;
-  top: -1px;
-  bottom: -1px;
+  top: 3px;
+  bottom: 3px;
   background: var(--drp-range-color);
   backdrop-filter: blur(var(--drp-range-blur));
   -webkit-backdrop-filter: blur(var(--drp-range-blur));
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
   cursor: grab;
   transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.2s;
 }
@@ -185,7 +185,7 @@
   z-index: 3;
   touch-action: none;
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.2s, left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
   border-radius: 1px;
 }
 

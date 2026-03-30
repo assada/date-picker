@@ -38,11 +38,18 @@ export function getMonthsInRange(
   maxDate: Date
 ): { date: Date; label: string; fraction: number }[] {
   const months = eachMonthOfInterval({ start: minDate, end: maxDate });
-  return months.map((m) => ({
-    date: m,
-    label: format(m, "MMMM"),
-    fraction: dateToFraction(m, minDate, maxDate),
-  }));
+  return months.map((m) => {
+    const mStart = startOfMonth(m);
+    const mEnd = endOfMonth(m);
+    // Position label at CENTER of the month's span on the timeline
+    const startFrac = dateToFraction(mStart < minDate ? minDate : mStart, minDate, maxDate);
+    const endFrac = dateToFraction(mEnd > maxDate ? maxDate : mEnd, minDate, maxDate);
+    return {
+      date: m,
+      label: format(m, "MMMM"),
+      fraction: (startFrac + endFrac) / 2,
+    };
+  });
 }
 
 export function rangeDayCount(start: Date, end: Date): number {

@@ -35,7 +35,7 @@ export default function DateRangePicker({
   const range = value ? { start: startOfDay(value.start), end: startOfDay(value.end) } : internalRange;
 
   const [activePresetIndex, setActivePresetIndex] = useState<number | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const [, setIsDragging] = useState(false);
 
   const handleChange = useCallback(
     (newRange: DateRange) => {

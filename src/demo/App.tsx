@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { startOfDay, format } from "date-fns";
+import { startOfDay, endOfDay, format } from "date-fns";
 import { DateRangePicker } from "../components/DateRangePicker";
 import type { DateRange } from "../components/DateRangePicker";
 
@@ -69,7 +69,7 @@ export default function App() {
         </div>
         <div style={{ color: "#9ca3af" }}>/</div>
         <div>
-          {format(range.end, "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")}
+          {format(endOfDay(range.end), "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")}
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import {
   isSameDay,
   playTickSound,
 } from "./utils";
+import { addDays } from "date-fns";
 import type { DateRangePickerProps, DateRange } from "./types";
 
 export default function DateRangePicker({
@@ -63,11 +64,20 @@ export default function DateRangePicker({
     (index: number) => {
       if (!presets) return;
       const preset = presets[index];
-      const resolved = resolvePreset(preset, effectiveMaxDate);
+      const days = preset.days ?? 30;
+      // Expand/contract symmetrically from CURRENT range center
+      const centerTime = (range.start.getTime() + range.end.getTime()) / 2;
+      const center = startOfDay(new Date(centerTime));
+      const halfDays = Math.floor((days - 1) / 2);
+      let newStart = startOfDay(addDays(center, -halfDays));
+      let newEnd = startOfDay(addDays(center, days - 1 - halfDays));
+      // Clamp to bounds
+      if (newStart < effectiveMinDate) newStart = effectiveMinDate;
+      if (newEnd > effectiveMaxDate) newEnd = effectiveMaxDate;
       setActivePresetIndex(index);
-      handleChange(resolved);
+      handleChange({ start: newStart, end: newEnd });
     },
-    [presets, effectiveMaxDate, handleChange]
+    [presets, range, effectiveMinDate, effectiveMaxDate, handleChange]
   );
 
   const handleDragChange = useCallback(

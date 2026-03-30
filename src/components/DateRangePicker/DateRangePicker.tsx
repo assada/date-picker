@@ -65,7 +65,6 @@ export default function DateRangePicker({
       const preset = presets[index];
       const resolved = resolvePreset(preset, effectiveMaxDate);
       setActivePresetIndex(index);
-      setScrollResetKey((k) => k + 1);
       handleChange(resolved);
     },
     [presets, effectiveMaxDate, handleChange]

@@ -1,5 +1,4 @@
-import { useRef, useState, useCallback, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState, useCallback, useEffect } from "react";
 import styles from "./DateRangePicker.module.css";
 import Handle from "./Handle";
 import DaysTooltip from "./DaysTooltip";
@@ -207,13 +206,9 @@ export default function Timeline({
           </svg>
 
           {/* Range highlight */}
-          <motion.div
+          <div
             className={`${styles.rangeHighlight} ${dragging === "range" ? styles.rangeHighlightDragging : ""}`}
-            animate={{
-              left: startPx,
-              width: highlightWidth,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            style={{ left: startPx, width: highlightWidth }}
             onPointerDown={handleRangePointerDown}
           />
 

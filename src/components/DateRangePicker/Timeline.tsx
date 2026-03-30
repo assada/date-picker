@@ -250,6 +250,7 @@ export default function Timeline({
             days={days}
             centerPx={clampedCenterPx}
             visible={true}
+            rangeWidthPx={highlightWidth}
           />
         </div>
       </div>

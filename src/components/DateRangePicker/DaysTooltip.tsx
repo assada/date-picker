@@ -5,6 +5,8 @@ interface DaysTooltipProps {
   days: number;
   centerPx: number;
   visible: boolean;
+  /** Width of the range highlight in px — used to decide if "Days" fits */
+  rangeWidthPx: number;
 }
 
 function OdometerDigit({ digit }: { digit: string }) {
@@ -26,8 +28,10 @@ function OdometerDigit({ digit }: { digit: string }) {
   );
 }
 
-export default function DaysTooltip({ days, centerPx, visible }: DaysTooltipProps) {
+export default function DaysTooltip({ days, centerPx, visible, rangeWidthPx }: DaysTooltipProps) {
   const digits = String(days).split("");
+  // Show "Days" suffix when the range highlight is wide enough (~80px+)
+  const showDays = rangeWidthPx > 80;
 
   return (
     <motion.div
@@ -44,6 +48,19 @@ export default function DaysTooltip({ days, centerPx, visible }: DaysTooltipProp
       {digits.map((d, i) => (
         <OdometerDigit key={digits.length - i} digit={d} />
       ))}
+      <AnimatePresence>
+        {showDays && (
+          <motion.span
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: "auto", opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            style={{ display: "inline-block", overflow: "hidden", whiteSpace: "nowrap", marginLeft: 3 }}
+          >
+            Days
+          </motion.span>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -4,11 +4,11 @@
   --drp-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   --drp-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --drp-track-bg: #f0f0f0;
-  --drp-range-color: rgba(100, 120, 150, 0.13);
-  --drp-handle-color: #888;
-  --drp-handle-active-color: #555;
+  --drp-range-blur: 3px;
+  --drp-range-color: rgba(180, 195, 215, 0.22);
+  --drp-handle-color: #8ba4c4;
+  --drp-handle-active-color: #5b7da5;
   --drp-tick-color: #c8c8c8;
-  --drp-tick-active-color: #999;
   --drp-text-primary: #111827;
   --drp-text-secondary: #9ca3af;
   --drp-text-month-active: #111827;
@@ -28,6 +28,7 @@
   box-sizing: border-box;
 }
 
+/* === Header === */
 .header {
   display: flex;
   align-items: center;
@@ -42,13 +43,6 @@
   font-weight: 500;
   color: var(--drp-text-primary);
   white-space: nowrap;
-  overflow: hidden;
-  position: relative;
-  height: 22px;
-}
-
-.rangeLabelText {
-  display: inline-block;
 }
 
 .presets {
@@ -95,6 +89,7 @@
   box-shadow: var(--drp-preset-shadow);
 }
 
+/* === Timeline === */
 .timeline {
   position: relative;
   padding: 14px 28px 0;
@@ -102,7 +97,7 @@
 
 .scrollArrow {
   position: absolute;
-  top: 0;
+  top: 14px;
   bottom: 24px;
   width: 28px;
   display: flex;
@@ -113,7 +108,7 @@
   font-size: 14px;
   font-weight: 600;
   z-index: 2;
-  transition: color 0.2s;
+  transition: color 0.2s, opacity 0.2s;
 }
 
 .scrollArrow:hover {
@@ -133,6 +128,7 @@
   pointer-events: none;
 }
 
+/* === Track === */
 .trackContainer {
   overflow: hidden;
   position: relative;
@@ -153,11 +149,14 @@
   pointer-events: none;
 }
 
+/* === Range Highlight — frosted glass blur === */
 .rangeHighlight {
   position: absolute;
-  top: 2px;
-  bottom: 2px;
+  top: 0;
+  bottom: 0;
   background: var(--drp-range-color);
+  backdrop-filter: blur(var(--drp-range-blur));
+  -webkit-backdrop-filter: blur(var(--drp-range-blur));
   border-radius: 4px;
   cursor: grab;
 }
@@ -166,12 +165,13 @@
   cursor: grabbing;
 }
 
+/* === Handles — short, subtle, elegant === */
 .handle {
   position: absolute;
-  top: 0;
-  bottom: 0;
+  top: 15%;
+  bottom: 15%;
   width: 2px;
-  background: #8ba4c4;
+  background: var(--drp-handle-color);
   transform: translateX(-50%);
   cursor: ew-resize;
   z-index: 3;
@@ -184,10 +184,10 @@
 .handle::before {
   content: "";
   position: absolute;
-  top: -4px;
+  top: -8px;
   left: -10px;
   right: -10px;
-  bottom: -4px;
+  bottom: -8px;
 }
 
 .root:hover .handle,
@@ -196,28 +196,29 @@
 }
 
 .handleDragging {
-  background: #5b7da5;
-  width: 3px;
+  background: var(--drp-handle-active-color);
 }
 
+/* === Days Tooltip — no background, just text === */
 .daysTooltip {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  background: var(--drp-bg);
-  border: 1px solid #e8eaed;
-  border-radius: 6px;
-  padding: 2px 8px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   font-size: 12px;
   font-weight: 500;
   color: var(--drp-text-primary);
   white-space: nowrap;
   pointer-events: none;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
   z-index: 4;
   overflow: hidden;
 }
 
+/* === Month Labels === */
 .monthLabels {
   position: relative;
   margin-top: 6px;

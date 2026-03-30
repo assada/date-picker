@@ -1,4 +1,4 @@
-import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import { motion, LayoutGroup } from "framer-motion";
 import styles from "./DateRangePicker.module.css";
 import { formatRangeLabel } from "./utils";
 import type { DateRange, DateRangePreset } from "./types";
@@ -17,24 +17,12 @@ export default function Header({
   onPresetClick,
 }: HeaderProps) {
   const { startLabel, endLabel } = formatRangeLabel(range.start, range.end);
-  const labelKey = `${startLabel}-${endLabel}`;
 
   return (
     <div className={styles.header}>
-      <div className={styles.rangeLabel}>
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={labelKey}
-            className={styles.rangeLabelText}
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -6 }}
-            transition={{ duration: 0.2 }}
-          >
-            {startLabel} – {endLabel}
-          </motion.span>
-        </AnimatePresence>
-      </div>
+      <span className={styles.rangeLabel}>
+        {startLabel} – {endLabel}
+      </span>
 
       {presets && presets.length > 0 && (
         <LayoutGroup>

@@ -206,38 +206,42 @@ export default function Timeline({
             </g>
           </svg>
 
-          {/* Range highlight with handles inside — they move together */}
+          {/* Range highlight — spring on click, instant on drag */}
           <motion.div
             className={`${styles.rangeHighlight} ${dragging === "range" ? styles.rangeHighlightDragging : ""}`}
             animate={{ left: startPx, width: highlightWidth }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={dragging
+              ? { type: "tween", duration: 0 }
+              : { type: "spring", stiffness: 300, damping: 30 }
+            }
             onPointerDown={handleRangePointerDown}
-          >
-            {/* Left handle — at left edge of range */}
-            <Handle
-              position={0}
-              onDrag={(frac) => {
-                const viewFrac = (startPx + frac * highlightWidth) / trackWidth * viewSpan + (1 - viewSpan + scrollOffset);
-                handleStartDrag(viewFrac);
-              }}
-              onDragStart={() => { setDragging("start"); onDragStart(); }}
-              onDragEnd={() => { setDragging(null); onDragEnd(); }}
-              trackWidth={highlightWidth}
-              isDragging={dragging === "start"}
-            />
-            {/* Right handle — at right edge of range */}
-            <Handle
-              position={1}
-              onDrag={(frac) => {
-                const viewFrac = (startPx + frac * highlightWidth) / trackWidth * viewSpan + (1 - viewSpan + scrollOffset);
-                handleEndDrag(viewFrac);
-              }}
-              onDragStart={() => { setDragging("end"); onDragStart(); }}
-              onDragEnd={() => { setDragging(null); onDragEnd(); }}
-              trackWidth={highlightWidth}
-              isDragging={dragging === "end"}
-            />
-          </motion.div>
+          />
+
+          {/* Handles — same logic: spring on click, instant on drag */}
+          <Handle
+            position={startPx / (trackWidth || 1)}
+            onDrag={(frac) => {
+              const viewFrac = frac * viewSpan + (1 - viewSpan + scrollOffset);
+              handleStartDrag(viewFrac);
+            }}
+            onDragStart={() => { setDragging("start"); onDragStart(); }}
+            onDragEnd={() => { setDragging(null); onDragEnd(); }}
+            trackWidth={trackWidth}
+            isDragging={dragging === "start"}
+            animated={!dragging}
+          />
+          <Handle
+            position={endPx / (trackWidth || 1)}
+            onDrag={(frac) => {
+              const viewFrac = frac * viewSpan + (1 - viewSpan + scrollOffset);
+              handleEndDrag(viewFrac);
+            }}
+            onDragStart={() => { setDragging("end"); onDragStart(); }}
+            onDragEnd={() => { setDragging(null); onDragEnd(); }}
+            trackWidth={trackWidth}
+            isDragging={dragging === "end"}
+            animated={!dragging}
+          />
 
           {/* Days tooltip */}
           <DaysTooltip

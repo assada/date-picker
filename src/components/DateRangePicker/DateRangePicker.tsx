@@ -9,6 +9,7 @@ import {
   subMonths,
   isSameDay,
   playTickSound,
+  dateToFraction,
 } from "./utils";
 import { addDays } from "date-fns";
 import type { DateRangePickerProps, DateRange } from "./types";
@@ -38,7 +39,7 @@ export default function DateRangePicker({
 
   const [activePresetIndex, setActivePresetIndex] = useState<number | null>(null);
   const [, setIsDragging] = useState(false);
-  const [scrollResetKey, setScrollResetKey] = useState(0);
+  const [scrollTarget, setScrollTarget] = useState<{ key: number; frac: number }>({ key: 0, frac: 0 });
 
   const prevRangeRef = useRef<DateRange>(range);
 
@@ -68,6 +69,9 @@ export default function DateRangePicker({
       if (preset.from && preset.to) {
         const resolved = resolvePreset(preset, effectiveMaxDate);
         setActivePresetIndex(index);
+        // Scroll to center of the preset range
+        const midFrac = (dateToFraction(resolved.start, effectiveMinDate, effectiveMaxDate) + dateToFraction(resolved.end, effectiveMinDate, effectiveMaxDate)) / 2;
+        setScrollTarget((prev) => ({ key: prev.key + 1, frac: midFrac }));
         handleChange(resolved);
         return;
       }
@@ -129,7 +133,7 @@ export default function DateRangePicker({
           setIsDragging(false);
           detectActivePreset();
         }}
-        scrollResetKey={scrollResetKey}
+        scrollTarget={scrollTarget}
       />
     </motion.div>
   );

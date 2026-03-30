@@ -23,7 +23,7 @@ interface TimelineProps {
   onChange: (range: DateRange) => void;
   onDragStart: () => void;
   onDragEnd: () => void;
-  scrollResetKey: number;
+  scrollTarget: { key: number; frac: number };
 }
 
 export default function Timeline({
@@ -33,17 +33,20 @@ export default function Timeline({
   onChange,
   onDragStart,
   onDragEnd,
-  scrollResetKey,
+  scrollTarget,
 }: TimelineProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [trackWidth, setTrackWidth] = useState(0);
   const [dragging, setDragging] = useState<"start" | "end" | "range" | null>(null);
   const [scrollOffset, setScrollOffset] = useState(0);
 
-  // Reset scroll to end (today) when preset is clicked
+  // Scroll to target fraction (e.g. "This month" or month click)
   useEffect(() => {
-    if (scrollResetKey > 0) setScrollOffset(0);
-  }, [scrollResetKey]);
+    if (scrollTarget.key > 0) {
+      const targetScroll = -(1 - viewSpan) + scrollTarget.frac - viewSpan / 2;
+      setScrollOffset(clampScroll(targetScroll));
+    }
+  }, [scrollTarget.key]);
 
   // Measure track width
   useEffect(() => {
@@ -178,18 +181,19 @@ export default function Timeline({
       </div>
 
       <div className={styles.trackContainer}>
-        <div ref={trackRef} className={styles.track} onClick={(e) => {
+        <div ref={trackRef} className={styles.track} onPointerUp={(e) => {
           if (dragging) return;
+          // Only handle direct clicks on track, not from drag releases
+          if (e.target !== trackRef.current && !(e.target instanceof SVGElement)) return;
           const rect = trackRef.current?.getBoundingClientRect();
           if (!rect) return;
           const clickPx = e.clientX - rect.left;
           const clickFrac = (clickPx / trackWidth) * viewSpan + viewStartFrac;
           const clickDate = startOfDay(fractionToDate(Math.max(0, Math.min(1, clickFrac)), minDate, maxDate));
-          // Move range center to click point, keep current width
           const currentDays = rangeDayCount(range.start, range.end);
           const halfDays = Math.floor((currentDays - 1) / 2);
-          let newStart = clampDate(addDays(clickDate, -halfDays), minDate, maxDate);
-          let newEnd = clampDate(addDays(clickDate, currentDays - 1 - halfDays), minDate, maxDate);
+          const newStart = clampDate(addDays(clickDate, -halfDays), minDate, maxDate);
+          const newEnd = clampDate(addDays(clickDate, currentDays - 1 - halfDays), minDate, maxDate);
           onChange({ start: startOfDay(newStart), end: startOfDay(newEnd) });
         }}>
           {/* SVG day ticks */}
